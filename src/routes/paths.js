@@ -20,43 +20,15 @@ export const PATH_AUTH = {
 };
 
 export const PATH_PAGE = {
-  comingSoon: '/coming-soon',
-  maintenance: '/maintenance',
-  pricing: '/pricing',
-  payment: '/payment',
-  about: '/about-us',
-  contact: '/contact-us',
-  faqs: '/faqs',
   page404: '/404',
-  page500: '/500',
-  components: '/components',
+  page500: '/500'
 };
 
 export const PATH_DASHBOARD = {
   root: ROOTS_DASHBOARD,
-  general: {
-    analytics: path(ROOTS_DASHBOARD, '/analytics'),
-  },
-  mail: {
-    root: path(ROOTS_DASHBOARD, '/mail'),
-    all: path(ROOTS_DASHBOARD, '/mail/all'),
-  },
-  chat: {
-    root: path(ROOTS_DASHBOARD, '/chat'),
-    new: path(ROOTS_DASHBOARD, '/chat/new'),
-    view: (name) => path(ROOTS_DASHBOARD, `/chat/${name}`),
-  },
-  calendar: path(ROOTS_DASHBOARD, '/calendar'),
-  kanban: path(ROOTS_DASHBOARD, '/kanban'),
-  user: {
-    root: path(ROOTS_DASHBOARD, '/user'),
-    new: path(ROOTS_DASHBOARD, '/user/new'),
-    list: path(ROOTS_DASHBOARD, '/user/list'),
-    cards: path(ROOTS_DASHBOARD, '/user/cards'),
-    profile: path(ROOTS_DASHBOARD, '/user/profile'),
-    account: path(ROOTS_DASHBOARD, '/user/account'),
-    edit: (name) => path(ROOTS_DASHBOARD, `/user/${name}/edit`),
-    demoEdit: path(ROOTS_DASHBOARD, `/user/reece-chung/edit`),
+  tasks: {
+    root: path(ROOTS_DASHBOARD, '/tasks'),
+    list: path(ROOTS_DASHBOARD, '/tasks/list'),
   },
   goals: {
     root: path(ROOTS_DASHBOARD, '/goals'),

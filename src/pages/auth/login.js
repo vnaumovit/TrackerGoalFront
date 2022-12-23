@@ -123,7 +123,7 @@ export default function Login() {
               </Stack>
 
               <Alert severity="info" sx={{ mb: 3 }}>
-                Используйте email : <strong>demo@minimals.cc</strong> / пароль :<strong> demo1234</strong>
+                Используйте email : <strong>example@gmail.com</strong> / пароль :<strong> example</strong>
               </Alert>
 
               <LoginForm />

@@ -1,6 +1,5 @@
-import { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 // next
-import NextLink from 'next/link';
 import { useRouter } from 'next/router';
 // @mui
 import {
@@ -8,21 +7,18 @@ import {
   Button,
   Card,
   Container,
-  Divider,
   FormControlLabel,
   IconButton,
   Stack,
   Switch,
-  Tab,
   Table,
   TableBody,
   TableContainer,
   TablePagination,
-  Tabs,
   Tooltip
 } from '@mui/material';
 // redux
-import { useDispatch } from '../../../redux/store';
+import { useDispatch, useSelector } from '../../../redux/store';
 // routes
 import { PATH_DASHBOARD } from '../../../routes/paths';
 // hooks
@@ -43,27 +39,21 @@ import {
   TableSkeleton
 } from '../../../components/table';
 // sections
-import {
-  GoalTableRow
-} from '../../../sections/@dashboard/goals/product-list';
-import useTabs from '../../../hooks/useTabs';
 import { useTheme } from '@mui/material/styles';
-import Label from '../../../components/Label';
-import GoalTableToolbar
-  from '../../../sections/@dashboard/goals/GoalTableToolbar';
-import { parseDate } from '../../../utils/formatTime';
-import HabitNewEditDetails
-  from '../../../sections/@dashboard/habits/new-edit-form/HabitNewEditDetails';
+import HabitTableRow
+  from '../../../sections/@dashboard/habits/product-list/HabitTableRow';
+import { useLocale } from '../../../components/locales/use-locale';
+import {
+  deleteHabit,
+  getHabits,
+  updateHabitDays
+} from '../../../redux/slices/habit';
+import AddHabitDetails from './addHabitDetails';
 
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
-  { id: 'title', label: 'Заглавие', align: 'left' },
-  { id: 'finishTitle', label: 'Причина для завершения цели', align: 'left' },
-  { id: 'status', label: 'Статус', align: 'center' },
-  { id: 'goalGroup', label: 'Группа', align: 'center' },
-  { id: 'endDate', label: 'Дата завершения', align: 'center', width: 140 },
-  { id: '' }
+  { id: 'name', label: 'Привычка', align: 'left' }
 ];
 
 // ----------------------------------------------------------------------
@@ -105,29 +95,52 @@ export default function GoalList() {
 
   const dispatch = useDispatch();
 
-  const [tableData, setTableData] = useState([]);
-
+  const [habit, setHabit] = useState(null)
   const [open, setOpen] = useState(false);
+  const { habits, isLoading } = useSelector((state) => state.habit);
+  const [habitTable, setHabitTable] = useState([]);
+  const table = { habitTable, setHabitTable }
+  const [updateDays, setUpdateDays] = useState([])
+  const updateDaysData = { updateDays, setUpdateDays }
+  const habitModal = { open, setOpen, habit, setHabit }
+
+  useEffect(() => {
+    dispatch(getHabits(page, rowsPerPage));
+  }, [dispatch, page, rowsPerPage]);
+
+
+  useEffect(() => {
+    if (habits.length) {
+      setHabitTable(habits);
+    }
+  }, [habits]);
+
+  const weekdays = useLocale()
+
 
   const handleClickOpen = () => {
     setOpen(true);
   };
 
-  const handleClose = () => {
-    setOpen(false);
-  };
-
+  const handleUpdateHabits = () => {
+    if (updateDays.length) {
+      updateHabitDays(updateDays);
+      setUpdateDays([])
+    }
+  }
 
   const handleDeleteRow = (id) => {
-    const deleteRow = tableData.filter((row) => row.id !== id);
+    const deleteRow = habitTable.filter((row) => row.id !== id);
     setSelected([]);
-    setTableData(deleteRow);
+    setHabitTable(deleteRow);
+    deleteHabit(id)
   }
 
   const handleDeleteRows = (selected) => {
-    const deleteRows = tableData.filter((row) => !selected.includes(row.id));
+    const deleteRows = habitTable.filter((row) => !selected.includes(row.id));
     setSelected([]);
-    setTableData(deleteRows);
+    setHabitTable(deleteRows);
+    deleteHabit(selected)
   };
 
   const handleEditRow = (id) => {
@@ -139,7 +152,7 @@ export default function GoalList() {
   };
 
   const dataFiltered = applySortFilter({
-    tableData,
+    habitTable,
     comparator: getComparator(order, orderBy)
   });
 
@@ -149,25 +162,30 @@ export default function GoalList() {
     <Page title="Цели">
       <Container maxWidth={themeStretch ? false : 'lg'}>
         <HeaderBreadcrumbs
-          heading="Список целей"
+          heading="Список привычек"
           links={[
             { name: 'Панель', href: PATH_DASHBOARD.root },
             {
-              name: 'Цели',
-              href: PATH_DASHBOARD.habits.root
-            },
-            { name: 'Список' }
+              name: 'Привычки'
+            }
           ]}
           action={
-            <NextLink href={PATH_DASHBOARD.habits.new} passHref>
-              <Button startIcon={<Iconify icon="eva:plus-fill"/>} variant="outlined" onClick={handleClickOpen}>
-                Новая привычка
+            <Stack direction="row" justifyContent="flex-end" spacing={3}>
+              <Button startIcon={<Iconify icon="eva:plus-fill"/>}
+                      variant="contained" onClick={handleClickOpen}>Добавить
+                привычку
               </Button>
-            </NextLink>
+              <Button startIcon={<Iconify icon={'material-symbols:update'}/>}
+                      variant="contained" onClick={handleUpdateHabits}>
+                Обновить изменения
+              </Button>
+            </Stack>
           }
         />
 
         <Card>
+
+          <AddHabitDetails table={table} habitModal={habitModal}/>
 
           <Scrollbar>
             <TableContainer sx={{ minWidth: 800 }}>
@@ -175,11 +193,11 @@ export default function GoalList() {
                 <TableSelectedActions
                   dense={dense}
                   numSelected={selected.length}
-                  rowCount={tableData.length}
+                  rowCount={habitTable.length}
                   onSelectAllRows={(checked) =>
                     onSelectAllRows(
                       checked,
-                      tableData.map((row) => row.id)
+                      habitTable.map((row) => row.id)
                     )
                   }
                   actions={
@@ -197,24 +215,46 @@ export default function GoalList() {
                 <TableHeadCustom
                   order={order}
                   orderBy={orderBy}
-                  headLabel={TABLE_HEAD}
-                  rowCount={tableData.length}
+                  headLabel={[...TABLE_HEAD, ...weekdays.map((d, index) => ({
+                    id: index,
+                    label: d.format('DD/MM')
+                  })), { id: '' }]}
+                  rowCount={habitTable.length}
                   numSelected={selected.length}
                   onSort={onSort}
                   onSelectAllRows={(checked) =>
                     onSelectAllRows(
                       checked,
-                      tableData.map((row) => row.id)
+                      habitTable.map((row) => row.id)
                     )
                   }
                 />
 
                 <TableBody>
-                  {/*<HabitNewEditDetails open={open} handleClose={handleClose}/>*/}
-                  <TableEmptyRows height={denseHeight}
-                                  emptyRows={emptyRows(page, rowsPerPage, tableData.length)}/>
+                  {(isLoading ? [...Array(rowsPerPage)] : dataFiltered)
+                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                    .map((row, index) =>
+                      row ? (
+                        <HabitTableRow
+                          key={row.id}
+                          row={row}
+                          selected={selected.includes(row.id)}
+                          onSelectRow={() => onSelectRow(row.id)}
+                          onViewRow={() => handleViewRow(row.id)}
+                          onDeleteRow={() => handleDeleteRow(row.id)}
+                          onEditRow={() => handleEditRow(row.id)}
+                          updateDaysData={updateDaysData}
+                        />
+                      ) : (
+                        !habitTable.length && <TableSkeleton key={index}
+                                                             sx={{ height: denseHeight }}/>
+                      )
+                    )}
 
-                  <TableNoData isNotFound={true}/>
+                  <TableEmptyRows height={denseHeight}
+                                  emptyRows={emptyRows(page, rowsPerPage, habitTable.length)}/>
+
+                  <TableNoData isNotFound={!habitTable.length}/>
                 </TableBody>
               </Table>
             </TableContainer>
@@ -247,10 +287,10 @@ export default function GoalList() {
 
 
 function applySortFilter({
-                           tableData,
+                           habitTable,
                            comparator
                          }) {
-  const stabilizedThis = tableData.map((el, index) => [el, index]);
+  const stabilizedThis = habitTable.map((el, index) => [el, index]);
 
   stabilizedThis.sort((a, b) => {
     const order = comparator(a[0], b[0]);
@@ -258,7 +298,7 @@ function applySortFilter({
     return a[1] - b[1];
   });
 
-  tableData = stabilizedThis.map((el) => el[0]);
+  habitTable = stabilizedThis.map((el) => el[0]);
 
-  return tableData;
+  return habitTable;
 }

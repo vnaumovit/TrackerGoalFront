@@ -53,7 +53,7 @@ export default function GoalNewEditForm({ isEdit, currentGoal }) {
       images: currentGoal?.images || [],
       status: currentGoal?.status || 'Создана',
       endDate: currentGoal?.endDate || null,
-      goalGroup: currentGoal?.goalGroup || goalGroups.length ? goalGroups[0] : null,
+      goalGroup: currentGoal?.goalGroup.id || null,
       stages: currentGoal?.stages || [{ name: '', description: '' }]
     }),
     [currentGoal, goalGroups]
@@ -70,8 +70,12 @@ export default function GoalNewEditForm({ isEdit, currentGoal }) {
     formState: { isSubmitting }
   } = methods;
 
-  async function saveGoal(data, goalGroups, isEdit) {
-    data.goalGroup === null ? data.goalGroup = goalGroups[0] : goalGroups.find(g => data.goalGroup === g.id)
+  async function saveGoal(data) {
+    if (data.goalGroup === null) {
+      data.goalGroup = goalGroups[0]
+    } else {
+      data.goalGroup = goalGroups.find(g => data.goalGroup === g.id);
+    }
     data.stages = data.stages.filter(s => s.name !== '' && s.description !== '')
     await addGoal(data, isEdit)
   }
@@ -79,7 +83,7 @@ export default function GoalNewEditForm({ isEdit, currentGoal }) {
   const handleSave = async (data) => {
     try {
       reset();
-      await saveGoal(data, goalGroups, isEdit);
+      await saveGoal(data);
       push(PATH_DASHBOARD.goals.list);
     } catch (error) {
       setOpen(true)
@@ -91,7 +95,7 @@ export default function GoalNewEditForm({ isEdit, currentGoal }) {
     try {
       reset();
       data.status = 'Приостановлена'
-      await saveGoal(data, goalGroups, isEdit);
+      await saveGoal(data);
       push(PATH_DASHBOARD.goals.list);
     } catch (error) {
       setOpen(true)
@@ -105,7 +109,8 @@ export default function GoalNewEditForm({ isEdit, currentGoal }) {
       <AlertError open={open} setOpen={setOpen}/>
       <FormProvider methods={methods}>
         <Card>
-          <GoalNewEditDetails goalGroups={goalGroups.length ? goalGroups : []}/>
+          <GoalNewEditDetails goalGroups={goalGroups}
+                              currentGoal={currentGoal}/>
           <StageNewEditDetails/>
         </Card>
         <Stack justifyContent="flex-end" direction="row" spacing={2}

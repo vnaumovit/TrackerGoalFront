@@ -2,11 +2,9 @@ import { combineReducers } from 'redux';
 import { persistReducer } from 'redux-persist';
 import createWebStorage from 'redux-persist/lib/storage/createWebStorage';
 // slices
-import mailReducer from './slices/mail';
-import chatReducer from './slices/chat';
 import goalReducer from './slices/goal';
-import calendarReducer from './slices/calendar';
-import kanbanReducer from './slices/kanban';
+import taskReducer from './slices/task';
+import habitReducer from './slices/habit';
 
 // ----------------------------------------------------------------------
 
@@ -39,12 +37,10 @@ const goalPersistConfig = {
 };
 
 const rootReducer = combineReducers({
-  mail: mailReducer,
-  chat: chatReducer,
-  calendar: calendarReducer,
-  kanban: kanbanReducer,
   goal: persistReducer(goalPersistConfig, goalReducer),
-  goalGroup: goalReducer
+  goalGroup: goalReducer,
+  task: taskReducer,
+  habit: habitReducer
 });
 
 export { rootPersistConfig, rootReducer };

@@ -1,32 +1,19 @@
-import PropTypes from 'prop-types';
-import React, { useCallback, useEffect, useState } from 'react';
-import { styled } from '@mui/material/styles';
-import { Box, Card, Grid, Stack, TextField, Typography } from '@mui/material';
+import React, { useCallback } from 'react';
+import { Box, Card, Grid, Stack, TextField } from '@mui/material';
 import {
   RHFEditor,
   RHFSelect,
   RHFTextField,
   RHFUploadMultiFile
 } from '../../../../components/hook-form';
-import { useFormContext, Controller } from 'react-hook-form';
+import { Controller, useFormContext } from 'react-hook-form';
 import DatePicker from '@mui/lab/DatePicker';
+import LabelStyle from '../../../../components/label/LabelStyle';
+import GoalGroupSelector from './GoalGroupSelector';
 // form
 
-const LabelStyle = styled(Typography)(({ theme }) => ({
-  ...theme.typography.subtitle2,
-  color: theme.palette.text.secondary,
-  marginBottom: theme.spacing(1)
-}));
-
 // ----------------------------------------------------------------------
-
-GoalNewEditDetails.propTypes = {
-  isEdit: PropTypes.bool,
-  currentGoal: PropTypes.object
-};
-
-// eslint-disable-next-line react/prop-types
-export default function GoalNewEditDetails({goalGroups}) {
+export default function GoalNewEditDetails({ goalGroups, currentGoal }) {
   const { control, setValue, watch } = useFormContext();
   const statuses = [
     'Создана',
@@ -69,12 +56,14 @@ export default function GoalNewEditDetails({goalGroups}) {
             <Stack spacing={3}>
               <div>
                 <LabelStyle>Сформулируйте вашу цель</LabelStyle>
-                <RHFTextField name="title" placeholder="Например, открыть кафе"/>
+                <RHFTextField name="title"
+                              placeholder="Например, открыть кафе"/>
               </div>
 
               <div>
                 <LabelStyle>Критерий завершения цели</LabelStyle>
-                <RHFTextField name="finishTitle" placeholder="Например, кафе запущено и функционирует"/>
+                <RHFTextField name="finishTitle"
+                              placeholder="Например, кафе запущено и функционирует"/>
               </div>
 
               <div>
@@ -106,13 +95,7 @@ export default function GoalNewEditDetails({goalGroups}) {
                 ))}
               </RHFSelect>
               <Stack spacing={3} mt={2}>
-                <RHFSelect name="goalGroup" label="Группа цели">
-                   {goalGroups.map((goalGroup) => (
-                    <option key={goalGroup.id} value={goalGroup.id}>
-                      {goalGroup.name}
-                    </option>
-                  ))}
-                </RHFSelect>
+                <GoalGroupSelector goalGroups={goalGroups} currentGoal={currentGoal}/>
                 <Controller
                   name="endDate"
                   control={control}

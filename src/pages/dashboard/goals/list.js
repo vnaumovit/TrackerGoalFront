@@ -45,9 +45,7 @@ import {
   TableSkeleton
 } from '../../../components/table';
 // sections
-import {
-  GoalTableRow
-} from '../../../sections/@dashboard/goals/product-list';
+import { GoalTableRow } from '../../../sections/@dashboard/goals/product-list';
 import useTabs from '../../../hooks/useTabs';
 import { useTheme } from '@mui/material/styles';
 import GoalAnalytic from '../../../sections/@dashboard/goals/GoalAnalytic';
@@ -60,7 +58,6 @@ import { parseDate } from '../../../utils/formatTime';
 
 const TABLE_HEAD = [
   { id: 'title', label: 'Заглавие', align: 'left' },
-  { id: 'finishTitle', label: 'Причина для завершения цели', align: 'left' },
   { id: 'status', label: 'Статус', align: 'center' },
   { id: 'goalGroup', label: 'Группа', align: 'center' },
   { id: 'endDate', label: 'Дата завершения', align: 'center', width: 140 },
@@ -121,7 +118,7 @@ export default function GoalList() {
   const {
     currentTab: filterStatus,
     onChangeTab: onFilterStatus
-  } = useTabs( 'Начата');
+  } = useTabs('Начата');
 
   const handleFilterName = (filterName) => {
     setFilterName(filterName);
@@ -164,7 +161,7 @@ export default function GoalList() {
     filterEndDate
   });
 
-  const denseHeight = dense ? 56 : 76;
+  const denseHeight = dense ? 60 : 80;
 
   const isNotFound = (!dataFiltered.length && !!filterName) || (!isLoading && !dataFiltered.length);
   const getLengthByStatus = (status) => tableData.filter((goal) => goal.status === status).length;
@@ -205,14 +202,13 @@ export default function GoalList() {
 
   useEffect(() => {
     dispatch(getGoals(page, rowsPerPage));
-  }, [dispatch]);
+  }, [dispatch, page, rowsPerPage]);
 
   useEffect(() => {
     if (goals.length) {
       setTableData(goals);
     }
   }, [goals]);
-
 
   return (
     <Page title="Цели">
@@ -270,7 +266,7 @@ export default function GoalList() {
                 title="Проваленные"
                 total={getLengthByStatus('Провал')}
                 percent={getPercentByStatus('Провал')}
-                icon="eva:bell-fill"
+                icon="material-symbols:cancel"
                 color={theme.palette.error.main}
               />
               <GoalAnalytic
@@ -395,7 +391,7 @@ export default function GoalList() {
 
           <Box sx={{ position: 'relative' }}>
             <TablePagination
-              rowsPerPageOptions={[5, 10, 25]}
+              rowsPerPageOptions={[5, 10, 25, 50, 75, 100]}
               component="div"
               count={dataFiltered.length}
               rowsPerPage={rowsPerPage}

@@ -6,14 +6,10 @@ import Layout from '../layouts';
 import Page from '../components/Page';
 // sections
 import {
+  HomeAdvertisement,
   HomeHero,
   HomeMinimal,
-  HomeDarkMode,
-  HomeColorPresets,
-  HomePricingPlans,
-  HomeAdvertisement,
-  HomeCleanInterfaces,
-  HomeHugePackElements,
+  HomePricingPlans
 } from '../sections/home';
 
 // ----------------------------------------------------------------------
@@ -43,14 +39,6 @@ export default function HomePage() {
         <HomeHero />
         <ContentStyle>
           <HomeMinimal />
-
-          <HomeHugePackElements />
-
-          <HomeDarkMode />
-
-          <HomeColorPresets />
-
-          <HomeCleanInterfaces />
 
           <HomePricingPlans />
 

@@ -24,15 +24,6 @@ const initialState = {
     priceRange: '',
     rating: ''
   },
-  checkout: {
-    activeStep: 0,
-    cart: [],
-    subtotal: 0,
-    total: 0,
-    discount: 0,
-    shipping: 0,
-    billing: null
-  }
 };
 
 const slice = createSlice({
@@ -202,20 +193,7 @@ export default slice.reducer;
 
 // Actions
 export const {
-  getCart,
-  addCart,
-  resetCart,
-  onGotoStep,
-  onBackStep,
-  onNextStep,
-  deleteCart,
-  createBilling,
-  applyShipping,
-  applyDiscount,
-  increaseQuantity,
-  decreaseQuantity,
-  sortByProducts,
-  filterProducts
+  sortByProducts
 } = slice.actions;
 
 // ----------------------------------------------------------------------
@@ -282,7 +260,6 @@ export async function deleteGoal(id) {
 }
 
 export async function addGoal(data, isEdit) {
-  console.log(data)
   let id = isEdit ? data.id : null
   let title = data.title
   let finishTitle = data.finishTitle
@@ -291,6 +268,7 @@ export async function addGoal(data, isEdit) {
   let goalGroup = data.goalGroup
   let endDate = data.endDate ? parseDate(data.endDate) : null
   let stages = data.stages
+  console.log(data)
   await axios.post('/api/goal/saveGoal', {
     id,
     title,

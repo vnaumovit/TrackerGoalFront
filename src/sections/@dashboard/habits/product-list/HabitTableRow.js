@@ -1,49 +1,43 @@
 import PropTypes from 'prop-types';
 import { useState } from 'react';
-import { sentenceCase } from 'change-case';
 // @mui
 import { useTheme } from '@mui/material/styles';
 import {
-  TableRow,
   Checkbox,
-  TableCell,
-  Typography,
   MenuItem,
-  Box
+  TableCell,
+  TableRow,
+  Typography
 } from '@mui/material';
 // utils
-import { fDate, fDateTime } from '../../../../utils/formatTime';
-import { fCurrency } from '../../../../utils/formatNumber';
 // components
-import Label from '../../../../components/Label';
-import Image from '../../../../components/Image';
 import Iconify from '../../../../components/Iconify';
 import { TableMoreMenu } from '../../../../components/table';
-import ReactMarkdown from 'react-markdown';
-import Markdown from '../../../../components/Markdown';
 //
 
 // ----------------------------------------------------------------------
 
-GoalTableRow.propTypes = {
+HabitTableRow.propTypes = {
   row: PropTypes.object,
   selected: PropTypes.bool,
   onEditRow: PropTypes.func,
   onSelectRow: PropTypes.func,
-  onDeleteRow: PropTypes.func,
+  onDeleteRow: PropTypes.func
 };
 
-export default function GoalTableRow({
-                                       row,
-                                       selected,
-                                       onEditRow,
-                                       onSelectRow,
-                                       onViewRow,
-                                       onDeleteRow
-                                     }) {
+export default function HabitTableRow({
+                                        row,
+                                        onEditRow,
+                                        onSelectRow,
+                                        selected,
+                                        onViewRow,
+                                        onDeleteRow,
+                                        updateDaysData
+                                      }) {
   const theme = useTheme();
-
-  const { title, status, goalGroup, endDate } = row;
+  const { id, name, habitDays } = row;
+  const [habitDaysTable, setDaysTable] = useState(habitDays)
+  const {updateDays, setUpdateDays} = updateDaysData
 
   const [openMenu, setOpenMenuActions] = useState(null);
 
@@ -55,36 +49,44 @@ export default function GoalTableRow({
     setOpenMenuActions(null);
   };
 
+  const handleSelectCheckbox = (day) => {
+    console.log(day.status)
+    let changeHabit = {...day, status: !day.status};
+    let editDay = habitDaysTable.map(d => d.id === day.id ? {...d, status: !d.status} : d)
+    setDaysTable(editDay);
+    let updateDaysNew = updateDays
+    let find = updateDaysNew.find(d => d.id === day.id);
+    if (find) {
+      updateDaysNew = updateDays.map(d => d.id === find.id ?  {...d, status: !d.status} : d)
+    } else {
+      updateDaysNew.push(changeHabit)
+    }
+    console.log(updateDaysNew)
+    setUpdateDays(updateDaysNew);
+  };
 
   return (
-    <TableRow hover selected={selected}>
+    <TableRow hover>
       <TableCell padding="checkbox">
-        <Checkbox checked={selected} onClick={onSelectRow} />
+        <Checkbox checked={selected} onClick={onSelectRow}/>
       </TableCell>
 
       <TableCell>
         <Typography variant="subtitle2" noWrap>
-          {title}
+          {name}
         </Typography>
       </TableCell>
 
-      <TableCell align="center">
-        <Typography variant="subtitle2" noWrap>
-          {status}
-        </Typography>
-      </TableCell>
-
-      <TableCell align="center">
-        <Typography variant="subtitle2" noWrap>
-          {goalGroup.name}
-        </Typography>
-      </TableCell>
-
-      <TableCell align="right">
-        <Typography variant="subtitle2" noWrap>
-          {endDate != null ? fDateTime(endDate) : 'Не установлена'}
-        </Typography>
-      </TableCell>
+      {
+        habitDays.map(day => (
+          <TableCell key={day.id}>
+            <Typography variant="subtitle2" noWrap>
+              <Checkbox checked={habitDaysTable.find(d => day.date === d.date).status}
+                        onClick={() => handleSelectCheckbox(day)}/>
+            </Typography>
+          </TableCell>
+        ))
+      }
 
       <TableCell align="right">
         <TableMoreMenu
@@ -100,7 +102,7 @@ export default function GoalTableRow({
                 }}
                 sx={{ color: 'error.main' }}
               >
-                <Iconify icon={'eva:trash-2-outline'} />
+                <Iconify icon={'eva:trash-2-outline'}/>
                 Удалить
               </MenuItem>
               <MenuItem
@@ -109,7 +111,7 @@ export default function GoalTableRow({
                   handleCloseMenu();
                 }}
               >
-                <Iconify icon={'eva:eye-fill'} />
+                <Iconify icon={'eva:eye-fill'}/>
                 Подробнее
               </MenuItem>
               <MenuItem
@@ -118,7 +120,7 @@ export default function GoalTableRow({
                   handleCloseMenu();
                 }}
               >
-                <Iconify icon={'eva:edit-fill'} />
+                <Iconify icon={'eva:edit-fill'}/>
                 Изменить
               </MenuItem>
             </>

@@ -4,7 +4,7 @@ import { useEffect } from 'react';
 import { useRouter } from 'next/router';
 // @mui
 import { styled, useTheme } from '@mui/material/styles';
-import { Box, Stack, Drawer } from '@mui/material';
+import { Box, Drawer, Stack } from '@mui/material';
 // hooks
 import useResponsive from '../../../hooks/useResponsive';
 import useCollapseDrawer from '../../../hooks/useCollapseDrawer';
@@ -18,8 +18,6 @@ import Scrollbar from '../../../components/Scrollbar';
 import { NavSectionVertical } from '../../../components/nav-section';
 //
 import navConfig from './NavConfig';
-import NavbarDocs from './NavbarDocs';
-import NavbarAccount from './NavbarAccount';
 import CollapseButton from './CollapseButton';
 
 // ----------------------------------------------------------------------
@@ -82,14 +80,11 @@ export default function NavbarVertical({ isOpenSidebar, onCloseSidebar }) {
           )}
         </Stack>
 
-        <NavbarAccount isCollapse={isCollapse} />
       </Stack>
 
       <NavSectionVertical navConfig={navConfig} isCollapse={isCollapse} />
 
       <Box sx={{ flexGrow: 1 }} />
-
-      {!isCollapse && <NavbarDocs />}
     </Scrollbar>
   );
 

@@ -28,7 +28,6 @@ TableHeadCustom.propTypes = {
   order: PropTypes.oneOf(['asc', 'desc']),
   sx: PropTypes.object,
 };
-
 export default function TableHeadCustom({
   order,
   orderBy,
